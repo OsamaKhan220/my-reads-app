@@ -1,4 +1,8 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# MyReads Project
+
+This is First project in one the final projects from Udacity's React Nano Degree program. I have used React to build this project.
+
+In the MyReads project, you'll have three bookshelves that will allow you to select and categorize books you have read, are currently reading, or want to read. I will call them three type of bookshelves.
 
 ## Available Scripts
 
