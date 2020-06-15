@@ -4,6 +4,7 @@ import Rack from "./Rack";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import Loader from "./Loader";
 import * as BooksAPI from "./BooksAPI";
+import SearchComponent from "./SearchComponent";
 
 class BooksApp extends React.Component {
   state = {
@@ -64,8 +65,8 @@ class BooksApp extends React.Component {
 
     if (newShelf !== "none" && previousShelf !== "none") {
       this.setState((prevState) => ({
-        [previousShelf]: currentShelfBooksUpdated,
         [newShelf]: [...prevState[newShelf], book],
+        [previousShelf]: currentShelfBooksUpdated,
       }));
     } else if (previousShelf === "none") {
       this.setState((prevState) => ({
@@ -106,6 +107,42 @@ class BooksApp extends React.Component {
       });
   };
 
+  searchBookShelf(bookId) {
+    const allBooks = [
+      ...this.state.read,
+      ...this.state.currentlyReading,
+      ...this.state.wantToRead,
+    ];
+    let bookRec = allBooks.filter((book) => book.id === bookId);
+    return bookRec.length !== 0 ? bookRec[0].shelf : "none";
+  }
+
+  searchBooks = (txtInput) => {
+    txtInput
+      ? BooksAPI.search(txtInput)
+          .then((books) => {
+            if (books.error) {
+              this.setState({
+                searchResult: [],
+              });
+              return;
+            }
+            let newBooks = books.map((book) => {
+              book.shelf = this.searchBookShelf(book.id);
+              return book;
+            });
+
+            this.setState({ searchResult: newBooks });
+          })
+          .catch((err) => {
+            console.log("Error fetching data", err);
+            this.setState({ isLoading: true });
+          })
+      : this.setState({
+          searchResult: [],
+        });
+  };
+
   render() {
     return (
       <Router>
@@ -119,10 +156,21 @@ class BooksApp extends React.Component {
                 path="/"
                 render={() => (
                   <Rack
-                    shelfChangeHandler={this.shelfChangeHandler}
                     currentlyReading={this.state.currentlyReading}
-                    wantToRead={this.state.wantToRead}
+                    shelfChangeHandler={this.shelfChangeHandler}
                     read={this.state.read}
+                    wantToRead={this.state.wantToRead}
+                  />
+                )}
+              />
+              <Route
+                exact
+                path="/search"
+                render={() => (
+                  <SearchComponent
+                    shelfChangeHandler={this.shelfChangeHandler}
+                    searchResult={this.state.searchResult}
+                    searchBooks={this.searchBooks}
                   />
                 )}
               />

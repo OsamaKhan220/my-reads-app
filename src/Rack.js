@@ -1,6 +1,7 @@
 import React from "react";
 import Shelf from "./Shelf";
 import Loader from "./Loader";
+import { Link } from "react-router-dom";
 
 function Rack(props) {
   const { currentlyReading, wantToRead, read, shelfChangeHandler } = props;
@@ -34,6 +35,11 @@ function Rack(props) {
             />
           </div>
         )}
+      </div>
+      <div className="open-search">
+        <Link to="/search">
+          <button>Add a book</button>
+        </Link>
       </div>
     </div>
   );
